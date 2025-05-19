@@ -24,7 +24,7 @@ const ButtonSignUpOptions: React.FC<ButtonSignUpOptionsProps> = ({
   return (
     <button
       onClick={() => signIn(signInType)}
-      className={`flex font-bold gap-2 px-6 py-2 text-sm ${backgroundColor} ${textColor} border rounded-lg ${hoverBackgroundColor} hover:cursor-pointer`}
+      className={`flex font-bold gap-2 px-6 py-2 text-sm ${backgroundColor} ${textColor} border rounded-2xl ${hoverBackgroundColor} hover:cursor-pointer`}
     >
       <Image
         src={logoSrc}
