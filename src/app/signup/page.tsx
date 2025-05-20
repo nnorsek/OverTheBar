@@ -37,26 +37,26 @@ const page = () => {
         <p className="justify-self-center text-sm text-gray-500 pt-2">
           or sign up with email
         </p>
-        <form className="flex flex-col gap-4 pt-4 px-5 text-black">
+        <form className="flex flex-col gap-4 pt-4 px-5 text-black ">
           <input
             type="text"
             placeholder="Full Name"
-            className="border border-gray-300 rounded px-4 py-2"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
           <input
             type="email"
             placeholder="you@exmaple.com"
-            className="border border-gray-300 rounded px-4 py-2"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
           <input
             type="password"
             placeholder="Password"
-            className="border border-gray-300 rounded px-4 py-2"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
           <input
             type="password"
             placeholder="Confirm Password"
-            className="border border-gray-300 rounded px-4 py-2"
+            className="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
 
           {/* Experience Level */}
