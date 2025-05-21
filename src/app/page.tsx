@@ -1,72 +1,75 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import Card from "./components/Card";
+import useInfiniteScroll from "./hooks/useInfiniteScroll"; // adjust if needed
+
+const allPrograms = [
+  {
+    imageSrc: "/images/pullup3.jpg",
+    alt: "Pull up",
+    title: "Pull Ups for Beginners",
+    description:
+      "Learn how to start your pull-up journey with easy-to-follow progressions and tips.",
+    buttonText: "Start Workout",
+  },
+  {
+    imageSrc: "/images/dips.webp",
+    alt: "Dips",
+    title: "Dips Made Easy",
+    description:
+      "Build upper body strength with simple, effective dip progressions for all levels.",
+    buttonText: "Start Workout",
+  },
+  {
+    imageSrc: "/images/core.avif",
+    alt: "Core",
+    title: "Core Activation Basics",
+    description:
+      "Learn to engage your core the right way for calisthenics strength.",
+    buttonText: "Start Workout",
+  },
+  // Add more entries as needed
+];
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [elevateVisible, setElevateVisible] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3); // Show initial 3
 
   useEffect(() => {
     setIsVisible(true);
-    // Delay showing the second text by 1 second (1000 ms)
     const timer = setTimeout(() => setElevateVisible(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
+  const loadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + 3, allPrograms.length));
+  };
+
+  const bottomRef = useInfiniteScroll(loadMore);
+
   return (
     <div className="text-white overflow-hidden">
+      {/* HERO SECTION */}
       <div className="relative h-screen">
         <Image
-          className="absolute inset-0 w-full h-full object-cover z-[-2]"
-          src="/images/pullup.webp"
+          className="absolute inset-0 object-cover z-[-2]"
+          src="/images/handstand.avif"
           alt="background-image"
           fill
         />
         <div className="absolute inset-0 bg-black/50 z-[-1]" />
-
-        <div className="p-10 pt-40">
-          <h1
-            className="text-7xl font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-            style={{
-              opacity: isVisible ? 1 : 0,
-              transition: "opacity 0.5s ease-out",
-              WebkitClipPath: isVisible
-                ? "inset(0 0 0 0)"
-                : "inset(0 50% 0 50%)",
-              clipPath: isVisible ? "inset(0 0 0 0)" : "inset(0 50% 0 50%)",
-              transitionProperty: "opacity, clip-path",
-              transitionDuration: "0.5s",
-              transitionTimingFunction: "ease-out",
-            }}
-          >
-            Master Your Body.
-          </h1>
-        </div>
-        <div className="pt-2 ml-30">
-          <div className="overflow-hidden">
-            <h1
-              className="text-7xl font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-              style={{
-                opacity: elevateVisible ? 1 : 0,
-                transition: "opacity 0.5s ease-out",
-                WebkitClipPath: elevateVisible
-                  ? "inset(0 0 0 0)"
-                  : "inset(0 50% 0 50%)",
-                clipPath: elevateVisible
-                  ? "inset(0 0 0 0)"
-                  : "inset(0 50% 0 50%)",
-                transitionProperty: "opacity, clip-path",
-                transitionDuration: "0.5s",
-                transitionTimingFunction: "ease-out",
-              }}
-            >
-              Elevate Your Skills.
-            </h1>
-          </div>
-          <div className="mt-12">
+        <div className="pl-15 pt-40 pb-2">
+          <h1 className="text-8xl font-bold">Master Your Body.</h1>
+          <h1 className="pt-8 text-8xl font-bold">Elevate Your Skills.</h1>
+          <p className="pt-5 pl-2 text-gray-300 text-base">
+            Turn your vision into reality...
+          </p>
+          <div className="pt-7 pl-2">
             <a
               href="/programs"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-full text-lg shadow-lg transition-all duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded text-lg shadow-lg transition-all duration-300"
             >
               Start Now
             </a>
@@ -74,12 +77,17 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="p-10 bg-zinc-900">
-        <h2 className="text-4xl font-semibold mb-4">Why Train With Us?</h2>
-        <p className="text-lg text-gray-300">
-          Our programs are designed to help you progress step-by-step, whether
-          you're a beginner or an advanced athlete.
-        </p>
+      {/* PROGRAM CARDS SECTION */}
+      <div className="bg-gray-200">
+        <h1 className="text-black pt-5 text-5xl text-center font-bold">
+          Featured Programs
+        </h1>
+        <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {allPrograms.slice(0, visibleCount).map((program, i) => (
+            <Card key={i} {...program} />
+          ))}
+        </div>
+        <div ref={bottomRef} className="h-10" />
       </div>
     </div>
   );
