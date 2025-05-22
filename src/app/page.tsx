@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Card from "./components/Card";
-import useInfiniteScroll from "./hooks/useInfiniteScroll"; // adjust if needed
+import useInfiniteScroll from "./hooks/useInfiniteScroll";
 
 const allPrograms = [
   {
@@ -29,13 +29,12 @@ const allPrograms = [
       "Learn to engage your core the right way for calisthenics strength.",
     buttonText: "Start Workout",
   },
-  // Add more entries as needed
 ];
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [elevateVisible, setElevateVisible] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(3); // Show initial 3
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     setIsVisible(true);
@@ -77,7 +76,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PROGRAM CARDS SECTION */}
       <div className="bg-gray-200">
         <h1 className="text-black pt-5 text-5xl text-center font-bold">
           Featured Programs

@@ -31,9 +31,12 @@ const Login = () => {
       const data = await res.json();
 
       if (res.ok) {
-        setUser(data.email); // update auth context
-        localStorage.setItem("userEmail", data.email); // optional persistence
-        alert(data.message);
+        setUser({
+          name: data.name,
+          email: data.email,
+          progression: data.progression,
+        });
+        localStorage.setItem("user", JSON.stringify(data));
         router.push("/");
       } else {
         setErrorMsg(data.message || "Invalid email or password");

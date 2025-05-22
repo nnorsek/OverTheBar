@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
+import ProfileModal from "./ProfileModal";
 
 const Navbar = () => {
   const { user, setUser } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const timeoutRef = useRef<number | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const handleMouseEnter = () => {
     if (timeoutRef.current !== null) {
@@ -25,6 +27,7 @@ const Navbar = () => {
     // Optional: also call backend logout API or clear cookies here if needed
   };
 
+  console.log(user);
   return (
     <div className="flex justify-between items-center px-8 py-4 bg-gray-800 sticky top-0 z-50 text-white font-bold text-xl">
       {/* Logo */}
@@ -34,7 +37,7 @@ const Navbar = () => {
       </a>
 
       {/* Nav Items */}
-      <div className="flex items-center space-x-10 relative">
+      <div className="flex items-center space-x-8 relative">
         {/* Programs dropdown */}
         <div
           className="relative"
@@ -113,10 +116,11 @@ const Navbar = () => {
             </button>
           </a>
         ) : (
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-5">
             <div
               title={user.email}
-              className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg font-bold cursor-pointer select-none"
+              onClick={() => setIsProfileOpen(true)}
+              className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg font-bold cursor-pointer select-none hover:cursor-pointer"
             >
               {user.name
                 ? user.name
@@ -125,17 +129,25 @@ const Navbar = () => {
                     .map((word) => word[0])
                     .join("")
                     .toUpperCase()
-                : "U"}
+                : "?"}
             </div>
             <button
               onClick={handleLogout}
-              className="text-sm underline hover:text-orange-500"
+              className="text-base underline hover:text-orange-500"
             >
               Logout
             </button>
           </div>
         )}
       </div>
+      <ProfileModal
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+        onLogout={() => {
+          setIsProfileOpen(false);
+          handleLogout();
+        }}
+      />
     </div>
   );
 };

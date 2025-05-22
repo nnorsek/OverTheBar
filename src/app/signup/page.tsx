@@ -58,6 +58,8 @@ const Page = () => {
     }
   };
 
+  console.log(formData);
+
   return (
     <div className="border flex justify-center bg-gray-300 min-h-screen">
       <div className="border bg-white justify-center my-30 w-200 h-180 shadow-xl rounded-xl">
