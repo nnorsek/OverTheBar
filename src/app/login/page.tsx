@@ -1,16 +1,49 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import ButtonSignUpOptions from "../components/ButtonSignUpOptions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [viewPassword, setViewPassword] = useState(false);
+  const router = useRouter();
+  const { setUser } = useAuth();
 
-  const togglePassword = () => {
-    setViewPassword((prev) => !prev);
+  const [viewPassword, setViewPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const togglePassword = () => setViewPassword((prev) => !prev);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setUser(data.email); // update auth context
+        localStorage.setItem("userEmail", data.email); // optional persistence
+        alert(data.message);
+        router.push("/");
+      } else {
+        setErrorMsg(data.message || "Invalid email or password");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setErrorMsg("Something went wrong.");
+    }
   };
-  console.log(viewPassword);
+
   return (
     <div className="flex justify-center items-center bg-gray-300 min-h-screen px-4">
       <div className="bg-white w-full max-w-md shadow-xl rounded-3xl p-6 sm:p-8">
@@ -22,7 +55,6 @@ const Login = () => {
           </a>
         </p>
 
-        {/* Social login buttons */}
         <div className="flex flex-col gap-4 pt-6">
           <ButtonSignUpOptions
             text="Continue with Google"
@@ -38,7 +70,7 @@ const Login = () => {
             logoSrc="/images/facebook-logo.png"
             backgroundColor="bg-blue-600"
             hoverBackgroundColor="hover:bg-blue-800"
-            signInType="google"
+            signInType="facebook"
           />
         </div>
 
@@ -50,10 +82,13 @@ const Login = () => {
           </div>
         </div>
 
-        <form className="flex flex-col gap-4 text-black">
+        <form className="flex flex-col gap-4 text-black" onSubmit={handleLogin}>
           <label className="text-sm text-gray-500">Your email</label>
           <input
             type="email"
+            value={email}
+            required
+            onChange={(e) => setEmail(e.target.value)}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
           <div className="flex justify-between items-center">
@@ -73,6 +108,9 @@ const Login = () => {
           </div>
           <input
             type={viewPassword ? "text" : "password"}
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
 
@@ -83,7 +121,14 @@ const Login = () => {
             Forgot your password?
           </a>
 
-          <button className="py-3 px-5 text-white bg-orange-500 rounded-full hover:bg-orange-600 transition w-full">
+          {errorMsg && (
+            <p className="text-red-500 text-sm text-center">{errorMsg}</p>
+          )}
+
+          <button
+            type="submit"
+            className="py-3 px-5 text-white bg-orange-500 rounded-full hover:bg-orange-600 transition w-full"
+          >
             Log in
           </button>
         </form>

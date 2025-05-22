@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
+  const { user, setUser } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const timeoutRef = useRef<number | null>(null);
 
@@ -15,7 +17,12 @@ const Navbar = () => {
   const handleMouseLeave = () => {
     timeoutRef.current = window.setTimeout(() => {
       setIsDropdownOpen(false);
-    }, 200); // Delay before closing
+    }, 200);
+  };
+
+  const handleLogout = () => {
+    setUser(null); // Clear user in context, auto-updates UI
+    // Optional: also call backend logout API or clear cookies here if needed
   };
 
   return (
@@ -28,7 +35,7 @@ const Navbar = () => {
 
       {/* Nav Items */}
       <div className="flex items-center space-x-10 relative">
-        {/* Dropdown wrapper */}
+        {/* Programs dropdown */}
         <div
           className="relative"
           onMouseEnter={handleMouseEnter}
@@ -97,11 +104,37 @@ const Navbar = () => {
         <a href="/FAQ" className="hover:text-orange-500">
           FAQ
         </a>
-        <a href="/login">
-          <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300">
-            Log in
-          </button>
-        </a>
+
+        {/* Conditionally render Log in button or user profile circle */}
+        {!user ? (
+          <a href="/login">
+            <button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300">
+              Log in
+            </button>
+          </a>
+        ) : (
+          <div className="flex items-center space-x-4">
+            <div
+              title={user.email}
+              className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center text-lg font-bold cursor-pointer select-none"
+            >
+              {user.name
+                ? user.name
+                    .split(" ")
+                    .filter((word) => word.length > 0)
+                    .map((word) => word[0])
+                    .join("")
+                    .toUpperCase()
+                : "U"}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-sm underline hover:text-orange-500"
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import "./globals.css";
+import { AuthProvider } from "./context/AuthContext";
 
 export const metadata = {
   title: "Over The Bar",
@@ -14,10 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head></head>
-      <body>
-        <Navbar />
-        {children}
-      </body>
+      <AuthProvider>
+        <body>
+          <Navbar />
+          {children}
+        </body>
+      </AuthProvider>
     </html>
   );
 }
