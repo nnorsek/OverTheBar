@@ -60,8 +60,10 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/50 z-[-1]" />
         <div className="pl-15 pt-40 pb-2">
-          <h1 className="text-8xl font-bold">Master Your Body.</h1>
-          <h1 className="pt-8 text-8xl font-bold">Elevate Your Skills.</h1>
+          <h1 className="text-8xl font-bold font-myfont">Master Your Body</h1>
+          <h1 className="pt-8 text-8xl font-bold font-myfont">
+            Elevate Your Skills
+          </h1>
           <p className="pt-5 pl-2 text-gray-300 text-base">
             Turn your vision into reality...
           </p>
@@ -76,10 +78,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-gray-200">
-        <h1 className="text-black pt-5 text-5xl text-center font-bold">
-          Featured Programs
-        </h1>
+      <div className="bg-black-1/4 pt-20">
         <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {allPrograms.slice(0, visibleCount).map((program, i) => (
             <Card key={i} {...program} />

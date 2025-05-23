@@ -32,7 +32,7 @@ const Navbar = () => {
     <div className="flex justify-between items-center px-8 py-4 bg-gray-800 sticky top-0 z-50 text-white font-bold text-xl">
       {/* Logo */}
       <a className="flex items-center" href="/">
-        <h1 className="text-4xl">Over</h1>
+        <h1 className="text-4xl font-serif">Over</h1>
         <h1 className="text-4xl text-orange-500 ml-1">TheBar</h1>
       </a>
 

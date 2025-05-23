@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -37,7 +37,7 @@ const getNextLevelInfo = (level: number | undefined) => {
   if (level < 3) return { next: "Intermediate", pointsNeeded: 3 - level };
   if (level < 6) return { next: "Advanced", pointsNeeded: 6 - level };
   if (level < 8) return { next: "Expert", pointsNeeded: 8 - level };
-  return null; // max level
+  return null;
 };
 
 const ProfileModal: React.FC<ProfileModalProps> = ({
@@ -46,6 +46,21 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   onLogout,
 }) => {
   const { user } = useAuth();
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onClose]);
 
   if (!isOpen) return null;
 
@@ -55,8 +70,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   const nextLevelInfo = getNextLevelInfo(user?.progression);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-96 relative">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl p-6 w-96 relative"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           className="absolute top-2 right-4 text-gray-500 hover:text-black text-xl"
           onClick={onClose}

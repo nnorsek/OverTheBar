@@ -18,6 +18,18 @@
     --foreground: #ededed;
   }
 }
+@font-face {
+  font-family: "MyFont";
+  src: url("/fonts/religath/RELIGATH-Demo.otf") format("opentype");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@layer utilities {
+  .font-myfont {
+    font-family: "MyFont", sans-serif;
+  }
+}
 
 body {
   overscroll-behavior: none;
