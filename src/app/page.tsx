@@ -64,13 +64,13 @@ export default function Home() {
           <h1 className="pt-8 text-8xl font-bold font-myfont">
             Elevate Your Skills
           </h1>
-          <p className="pt-5 pl-2 text-gray-300 text-base">
+          <p className="pt-5 pl-2 text-gray-200 font-bold text-xl">
             Turn your vision into reality...
           </p>
           <div className="pt-7 pl-2">
             <a
               href="/programs"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded text-lg shadow-lg transition-all duration-300"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-10 rounded text-xl shadow-lg transition-all duration-300"
             >
               Start Now
             </a>
@@ -78,7 +78,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-black-1/4 pt-20">
+      <div className="bg-black-1/4 pt-10">
         <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {allPrograms.slice(0, visibleCount).map((program, i) => (
             <Card key={i} {...program} />
