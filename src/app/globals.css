@@ -25,9 +25,19 @@
   font-weight: 400;
 }
 
+@font-face {
+  font-family: "SecondaryFont";
+  src: url("/fonts/raleway/Raleway-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+}
+
 @layer utilities {
   .font-myfont {
     font-family: "MyFont", sans-serif;
+  }
+  .font-secondaryfont {
+    font-family: "SecondaryFont", sans-serif;
   }
 }
 
