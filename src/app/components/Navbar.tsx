@@ -23,7 +23,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    setUser(null); // Clear user in context, auto-updates UI
+    setUser(null);
     // Optional: also call backend logout API or clear cookies here if needed
   };
 
@@ -53,43 +53,43 @@ const Navbar = () => {
             }`}
           >
             <a
-              href="#"
+              href="/programs/beginner"
               className="block font-thin tracking-wide px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Beginner Program
             </a>
             <a
-              href="#"
+              href="/programs/intermediate"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Intermediate Program
             </a>
             <a
-              href="#"
+              href="/programs/advanced"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Advanced Program
             </a>
             <a
-              href="#"
+              href="/programs/muscle-up"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Muscle Up Program
             </a>
             <a
-              href="#"
+              href="/programs/handstand"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Handstand Program
             </a>
             <a
-              href="#"
+              href="/programs/weighted-calisthenics"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Weighted Calisthenics Introduction
             </a>
             <a
-              href="#"
+              href="/programs/stretching-and-mobility"
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Stretching and Mobility Program
