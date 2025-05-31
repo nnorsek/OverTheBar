@@ -1,10 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import ButtonSignUpOptions from "../components/ButtonSignUpOptions";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 const Page = () => {
   const experienceLevels = ["Beginner", "Intermediate", "Advanced"];
+
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +47,8 @@ const Page = () => {
         }
       );
       alert(response.data);
-
+      localStorage.setItem("user", JSON.stringify(formData));
+      router.push("/");
       // Optionally reset the form
       setFormData({
         name: "",

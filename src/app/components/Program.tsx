@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 
 interface Section {
@@ -49,7 +50,6 @@ const Program: React.FC<ProgramProps> = ({
   const allCompleted = completed.every(Boolean);
   const levelPoints = levelToPoints(level);
 
-  // Load finished state from localStorage
   useEffect(() => {
     const finishedKey = `finished_${title}`;
     const hasFinished = localStorage.getItem(finishedKey) === "true";
@@ -80,11 +80,8 @@ const Program: React.FC<ProgramProps> = ({
 
     const newProgression = (user.progression || 0) + levelPoints;
     setUser({ ...user, progression: newProgression });
-
-    // Save finished state in localStorage
     localStorage.setItem(`finished_${title}`, "true");
     setIsFinished(true);
-
     alert(`You've earned ${levelPoints} point(s)!`);
   };
 
@@ -95,62 +92,82 @@ const Program: React.FC<ProgramProps> = ({
   }, []);
 
   return (
-    <div className="flex p-10 text-white bg-[#1f1f1f] min-h-screen gap-10">
-      {/* Left Side */}
-      <div className="flex flex-col flex-grow max-w-4xl">
-        <h1 className="text-4xl font-bold">{title}</h1>
-        <p className="mt-4">{description}</p>
-        <div className="mt-4 text-sm text-gray-300 uppercase">
-          Level: {level}
-        </div>
-        <div className="mt-6 relative w-full aspect-video">
-          <iframe
-            ref={iframeRef}
-            src={`${videoSrc}?enablejsapi=1`}
-            title={title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="w-full h-full rounded-lg"
-          />
-        </div>
+    <div className="min-h-screen bg-[#121212] text-white p-8">
+      <div className="mb-6">
+        <Link
+          href="/"
+          className="text-sm text-gray-400 hover:text-white underline"
+        >
+          ← Back to Home
+        </Link>
       </div>
 
-      {/* Sidebar */}
-      <div className="w-64 border-l border-gray-700 pl-6">
-        <h2 className="text-xl font-semibold mb-4">Sections</h2>
-        <ul className="space-y-4">
-          {sections.map((section, index) => (
-            <li
-              key={index}
-              className="flex items-center justify-between cursor-pointer"
-            >
-              <button
-                onClick={() => seekTo(section.time)}
-                className="text-left hover:underline"
-              >
-                {section.label}
-              </button>
-              <input
-                type="checkbox"
-                checked={completed[index]}
-                onChange={() => toggleCompleted(index)}
-                className="ml-2"
-              />
-            </li>
-          ))}
-        </ul>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* Main content */}
+        <div className="lg:col-span-2">
+          <h1 className="text-4xl font-bold mb-4">{title}</h1>
+          <p className="text-lg mb-2">{description}</p>
+          <p className="text-sm text-gray-400 mb-6 uppercase">Level: {level}</p>
 
-        <button
-          disabled={!allCompleted || isFinished}
-          onClick={handleFinish}
-          className={`mt-6 w-full py-2 rounded text-white font-semibold transition ${
-            allCompleted && !isFinished
-              ? "bg-green-600 hover:bg-green-700"
-              : "bg-gray-500 cursor-not-allowed"
-          }`}
-        >
-          {isFinished ? "Completed" : "Finish"}
-        </button>
+          <p className="text-yellow-400 mb-6">
+            ✅ Complete all sections below to earn{" "}
+            <strong>
+              {levelPoints} progression point
+              {levelPoints > 1 ? "s" : ""}
+            </strong>{" "}
+            toward your fitness journey!
+          </p>
+
+          <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
+            <iframe
+              ref={iframeRef}
+              src={`${videoSrc}?enablejsapi=1`}
+              title={title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="bg-[#1f1f1f] rounded-lg p-6 shadow-lg border border-gray-700">
+          <h2 className="text-2xl font-semibold mb-4">Program Sections</h2>
+
+          <ul className="space-y-4">
+            {sections.map((section, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
+                <button
+                  onClick={() => seekTo(section.time)}
+                  className="hover:underline text-left flex-1"
+                >
+                  {section.label}
+                </button>
+                <input
+                  type="checkbox"
+                  checked={completed[index]}
+                  onChange={() => toggleCompleted(index)}
+                  className="ml-3"
+                />
+              </li>
+            ))}
+          </ul>
+
+          <button
+            disabled={!allCompleted || isFinished}
+            onClick={handleFinish}
+            className={`mt-6 w-full py-2 rounded font-semibold transition ${
+              allCompleted && !isFinished
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-gray-600 cursor-not-allowed"
+            }`}
+          >
+            {isFinished ? "✅ Completed" : "Finish Program"}
+          </button>
+        </div>
       </div>
     </div>
   );
