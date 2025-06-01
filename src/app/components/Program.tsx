@@ -46,15 +46,15 @@ const Program: React.FC<ProgramProps> = ({
   const [isFinished, setIsFinished] = useState<boolean>(false);
 
   const { user, setUser } = useAuth();
-
   const allCompleted = completed.every(Boolean);
   const levelPoints = levelToPoints(level);
 
   useEffect(() => {
-    const finishedKey = `finished_${title}`;
+    if (!user) return;
+    const finishedKey = `finished_${user.email}_${title}`;
     const hasFinished = localStorage.getItem(finishedKey) === "true";
     if (hasFinished) setIsFinished(true);
-  }, [title]);
+  }, [title, user]);
 
   const seekTo = (seconds: number) => {
     iframeRef.current?.contentWindow?.postMessage(
@@ -75,50 +75,70 @@ const Program: React.FC<ProgramProps> = ({
     });
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (!user || isFinished) return;
 
     const newProgression = (user.progression || 0) + levelPoints;
-    setUser({ ...user, progression: newProgression });
-    localStorage.setItem(`finished_${title}`, "true");
-    setIsFinished(true);
-    alert(`You've earned ${levelPoints} point(s)!`);
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/users/progress`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: user.email,
+          progression: newProgression,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to update progression");
+      }
+
+      const updatedUser = await res.json();
+
+      setUser(updatedUser);
+      localStorage.setItem(`finished_${user.email}_${title}`, "true");
+      setIsFinished(true);
+      alert(`You've earned ${levelPoints} point${levelPoints > 1 ? "s" : ""}!`);
+    } catch (error) {
+      console.error("Error updating progression:", error);
+      alert("Something went wrong saving your progress.");
+    }
   };
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(script);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[#121212] text-white p-8">
+    <div className="min-h-screen bg-[url('/pattern.svg')] bg-cover text-white p-8 font-sans">
       <div className="mb-6">
         <Link
           href="/"
-          className="text-sm text-gray-400 hover:text-white underline"
+          className="text-sm text-gray-300 hover:text-white underline"
         >
           ← Back to Home
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Main content */}
         <div className="lg:col-span-2">
-          <h1 className="text-4xl font-bold mb-4">{title}</h1>
-          <p className="text-lg mb-2">{description}</p>
-          <p className="text-sm text-gray-400 mb-6 uppercase">Level: {level}</p>
-
-          <p className="text-yellow-400 mb-6">
-            ✅ Complete all sections below to earn{" "}
-            <strong>
-              {levelPoints} progression point
-              {levelPoints > 1 ? "s" : ""}
-            </strong>{" "}
-            toward your fitness journey!
+          <h1 className="text-5xl font-extrabold mb-4 tracking-tight">
+            {title}
+          </h1>
+          <p className="text-lg text-gray-300 mb-2">{description}</p>
+          <p className="text-sm text-purple-300 mb-6 uppercase tracking-widest">
+            LEVEL: {level}
           </p>
 
-          <div className="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
+          <div className="bg-black/60 text-yellow-400 p-4 rounded shadow-inner mb-6 border border-yellow-500">
+            ✅ Complete all the sections below to unlock{" "}
+            <strong>
+              {levelPoints} progression point{levelPoints > 1 ? "s" : ""}
+            </strong>{" "}
+            and advance your journey!
+          </div>
+
+          <div className="aspect-video w-full rounded-xl overflow-hidden shadow-xl border border-gray-700">
             <iframe
               ref={iframeRef}
               src={`${videoSrc}?enablejsapi=1`}
@@ -131,27 +151,28 @@ const Program: React.FC<ProgramProps> = ({
         </div>
 
         {/* Sidebar */}
-        <div className="bg-[#1f1f1f] rounded-lg p-6 shadow-lg border border-gray-700">
-          <h2 className="text-2xl font-semibold mb-4">Program Sections</h2>
+        <div className="bg-black/60 rounded-xl p-6 shadow-lg border border-gray-700 space-y-6">
+          <h2 className="text-2xl font-bold text-white">Program Sections</h2>
 
-          <ul className="space-y-4">
+          <ul className="space-y-3">
             {sections.map((section, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between text-sm"
-              >
+              <li key={index} className="flex justify-between items-center">
                 <button
                   onClick={() => seekTo(section.time)}
-                  className="hover:underline text-left flex-1"
+                  className="text-left text-white hover:underline w-full"
                 >
                   {section.label}
                 </button>
-                <input
-                  type="checkbox"
-                  checked={completed[index]}
-                  onChange={() => toggleCompleted(index)}
-                  className="ml-3"
-                />
+                <button
+                  onClick={() => toggleCompleted(index)}
+                  className={`ml-4 px-3 py-1 rounded-full text-sm font-bold transition ${
+                    completed[index]
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-600 text-gray-300 hover:bg-gray-500"
+                  }`}
+                >
+                  {completed[index] ? "✓" : "Mark"}
+                </button>
               </li>
             ))}
           </ul>
@@ -159,13 +180,13 @@ const Program: React.FC<ProgramProps> = ({
           <button
             disabled={!allCompleted || isFinished}
             onClick={handleFinish}
-            className={`mt-6 w-full py-2 rounded font-semibold transition ${
+            className={`w-full py-3 mt-4 rounded-lg text-lg font-semibold transition ${
               allCompleted && !isFinished
                 ? "bg-green-600 hover:bg-green-700"
-                : "bg-gray-600 cursor-not-allowed"
+                : "bg-gray-500 cursor-not-allowed"
             }`}
           >
-            {isFinished ? "✅ Completed" : "Finish Program"}
+            {isFinished ? "✅ Program Completed" : "Finish Program"}
           </button>
         </div>
       </div>

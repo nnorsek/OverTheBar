@@ -104,7 +104,7 @@ export default function Home() {
           </p>
           <div className="pt-7">
             <a
-              href="/programs"
+              href="/signup"
               className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-10 rounded text-xl shadow-lg transition-all duration-300"
             >
               Start Now

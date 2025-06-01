@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Program from "../../components/Program";
+import Program from "../../components/Program"; // Adjust path if needed
 
 export default async function ProgramPage({
   params,
@@ -13,7 +13,6 @@ export default async function ProgramPage({
   if (!res.ok) return notFound();
 
   const program = await res.json();
-  console.log(program);
 
   return <Program {...program} />;
 }
