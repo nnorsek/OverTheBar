@@ -19,13 +19,13 @@ interface ProgramProps {
 
 const levelToPoints = (level: string): number => {
   switch (level.toLowerCase()) {
-    case "beginner":
+    case "Beginner":
       return 1;
-    case "intermediate":
+    case "Intermediate":
       return 2;
-    case "advanced":
+    case "Advanced":
       return 3;
-    case "expert":
+    case "Expert":
       return 4;
     default:
       return 0;

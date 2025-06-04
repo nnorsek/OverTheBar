@@ -2,7 +2,8 @@
 
 import React from "react";
 import { useAuth } from "../context/AuthContext";
-import { getNextLevelInfo, getProgressionLabel } from "../utils";
+import { getNextLevelInfo, getProgressionLabel, levelColor } from "../utils";
+import Link from "next/link";
 import {
   ResponsiveContainer,
   LineChart,
@@ -14,32 +15,22 @@ import {
 } from "recharts";
 
 interface Program {
-  id: string;
+  _id: string;
+  slug: string;
   title: string;
   description: string;
-  level: string;
+  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  images: { imgSrc: string; alt: string }[];
 }
 
-const suggestedPrograms: Program[] = [
-  {
-    id: "prog-1",
-    title: "Beginner Full Body",
-    description: "Start your journey with a full-body beginner program.",
-    level: "Beginner",
-  },
-  {
-    id: "prog-2",
-    title: "Core Strength",
-    description: "Focus on your core strength and stability.",
-    level: "Intermediate",
-  },
-  {
-    id: "prog-3",
-    title: "Advanced Mobility",
-    description: "Improve your flexibility and mobility.",
-    level: "Advanced",
-  },
-];
+function capitalizeFirstLetter(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+function getRandomPrograms(programs: Program[], count: number): Program[] {
+  const shuffled = [...programs].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
 
 const progressData = [
   { month: "Jan 2024", points: 100 },
@@ -50,32 +41,52 @@ const progressData = [
   { month: "Jun 2024", points: 1250 },
 ];
 
-const DashboardPage = () => {
+interface DashboardPageProps {
+  programs: Program[];
+}
+
+const DashboardPage = ({ programs }: DashboardPageProps) => {
   const { user } = useAuth();
-
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-800">
-        Loading user data...
-      </div>
-    );
-  }
-
-  const nextLevelInfo = getNextLevelInfo(user.progression);
-  const pointsToNext = nextLevelInfo ? nextLevelInfo.pointsToNext : 0;
-  const nextLevel = nextLevelInfo ? nextLevelInfo.nextLevel : null;
+  console.log(user);
+  const progression = user?.progression || 0;
+  const nextLevelInfo = getNextLevelInfo(progression);
+  const pointsToNext = nextLevelInfo?.pointsToNext ?? 0;
+  const nextLevel = nextLevelInfo?.nextLevel ?? "";
 
   const progressPercent =
-    pointsToNext !== null
-      ? ((user.progression || 0) / ((user.progression || 0) + pointsToNext)) *
-        100
+    pointsToNext !== 0
+      ? (progression / (progression + pointsToNext)) * 100
       : 100;
 
   return (
-    <main className=" text-white p-6">
-      <section className="max-w-7xl mx-auto space-y-10">
+    <main className="relative text-white p-6">
+      {/* Overlay & Blur if not signed in */}
+      {!user && (
+        <>
+          <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-20" />
+          <div className="absolute inset-0 z-30 flex items-center justify-center">
+            <div className="bg-[#1a1a1a] border border-orange-500 p-10 rounded-xl shadow-lg text-center max-w-md mx-auto">
+              <h2 className="text-2xl font-bold text-orange-400 mb-4">
+                Sign in required
+              </h2>
+              <p className="text-gray-300 mb-6">
+                Please sign in to view your personalized dashboard and track
+                your progress.
+              </p>
+              <a
+                href="/login"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded text-lg shadow transition duration-300"
+              >
+                Start Now
+              </a>
+            </div>
+          </div>
+        </>
+      )}
+
+      <section className="max-w-7xl mx-auto space-y-10 relative z-10">
         <header>
-          <h1 className="text-4xl font-bold text-orange-500 mb-2 text-center pt-10">
+          <h1 className="text-4xl font-extrabold text-white mb-2 text-center pt-10">
             Your Progression Overview
           </h1>
         </header>
@@ -84,15 +95,13 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-[#1a1a1a] p-6 rounded-xl shadow-md text-center">
             <div className="text-gray-300">Progression Points:</div>
-            <div className="text-4xl font-bold text-orange-500">
-              {user.progression}
-            </div>
+            <div className="text-4xl font-bold text-white">{progression}</div>
           </div>
 
           <div className="bg-[#1a1a1a] p-6 rounded-xl shadow-md text-center">
             <div className="text-gray-300">Progression Level:</div>
-            <div className="text-4xl font-bold text-orange-500">
-              {getProgressionLabel(user.progression)}
+            <div className="text-4xl font-bold text-white">
+              {getProgressionLabel(progression)}
             </div>
           </div>
 
@@ -100,12 +109,12 @@ const DashboardPage = () => {
             <div className="text-gray-300">Progress to Next Level:</div>
             <div className="relative w-full h-4 bg-gray-700 rounded-full mt-2">
               <div
-                className="absolute h-4 bg-orange-500 rounded-full transition-all duration-500 ease-in-out"
+                className="absolute h-4 bg-blue-500 rounded-full transition-all duration-500 ease-in-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
             <div className="mt-2 text-sm text-gray-400">
-              {pointsToNext} {pointsToNext < 2 ? "point" : "points"} to{" "}
+              {pointsToNext} {pointsToNext === 1 ? "point" : "points"} to{" "}
               {nextLevel} Level
             </div>
           </div>
@@ -113,7 +122,7 @@ const DashboardPage = () => {
 
         {/* Line Chart */}
         <div>
-          <h2 className="text-2xl font-bold text-orange-500 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Progression Over Time
           </h2>
           <div className="bg-[#1a1a1a] p-6 rounded-xl shadow-md">
@@ -140,23 +149,30 @@ const DashboardPage = () => {
 
         {/* Suggested Programs */}
         <div>
-          <h2 className="text-2xl font-bold text-orange-500 mb-4">
+          <h2 className="text-2xl font-bold text-white mb-4">
             Programs You Might Like
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {suggestedPrograms.map((program) => (
-              <div
-                key={program.id}
-                className="bg-[#1a1a1a] p-5 rounded-xl shadow-md hover:shadow-orange-500 transition-shadow"
+            {getRandomPrograms(programs, 3).map((program) => (
+              <Link
+                key={program.title}
+                href={`/programs/${program.slug}`}
+                className="bg-[#1a1a1a] p-5 rounded-xl shadow-md hover:shadow-orange-500 transition-shadow hover:cursor-pointer flex flex-col justify-between"
               >
-                <h3 className="text-xl font-semibold text-orange-400 mb-2">
-                  {program.title}
-                </h3>
-                <p className="text-gray-400 mb-3">{program.description}</p>
-                <span className="inline-block bg-orange-500 text-black font-bold px-3 py-1 rounded-full text-sm">
-                  {program.level}
+                <div>
+                  <h3 className="text-xl font-semibold text-orange-400 mb-2">
+                    {program.title}
+                  </h3>
+                  <p className="text-gray-400 mb-3">{program.description}</p>
+                </div>
+                <span
+                  className={`inline-block w-32 text-center ${levelColor(
+                    program.level
+                  )} text-black font-bold px-3 py-1 rounded-full text-sm mt-4`}
+                >
+                  {capitalizeFirstLetter(program.level)}
                 </span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -53,43 +53,43 @@ const Navbar = () => {
             }`}
           >
             <a
-              href="/programs/beginner"
+              href={user ? "/programs/beginner" : "/login"}
               className="block font-thin tracking-wide px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Beginner Program
             </a>
             <a
-              href="/programs/intermediate"
+              href={user ? "/programs/intermediate" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Intermediate Program
             </a>
             <a
-              href="/programs/advanced"
+              href={user ? "/programs/advanced" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Advanced Program
             </a>
             <a
-              href="/programs/muscle-up"
+              href={user ? "/programs/muscle-up" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Muscle Up Program
             </a>
             <a
-              href="/programs/handstand"
+              href={user ? "/programs/handstand" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Handstand Program
             </a>
             <a
-              href="/programs/weighted-calisthenics"
+              href={user ? "/programs/weighted-calisthenics" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Weighted Calisthenics Introduction
             </a>
             <a
-              href="/programs/stretching-and-mobility"
+              href={user ? "/programs/stretching-and-mobility" : "/login"}
               className="block font-thin px-4 py-5 hover:text-orange-500 border-b-[0.5px] border-gray-600 last:border-b-0"
             >
               Stretching and Mobility Program

@@ -18,3 +18,15 @@ export const getProgressionLabel = (level: number | undefined) => {
   if (level < 7) return "Intermediate";
   return "Advanced";
 };
+
+type Level = "Beginner" | "Intermediate" | "Advanced" | "Expert";
+
+export const levelColor = (level: Level): string => {
+  const colors: Record<Level, string> = {
+    Beginner: "bg-green-500",
+    Intermediate: "bg-yellow-400",
+    Advanced: "bg-blue-600",
+    Expert: "bg-red-700",
+  };
+  return colors[level];
+};

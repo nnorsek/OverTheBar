@@ -2,18 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import useInViewAnimation from "../hooks/useInViewAnimation";
-
-type Level = "Easy" | "Intermediate" | "Advanced" | "Expert";
-
-const levelColor = (level: Level): string => {
-  const colors: Record<Level, string> = {
-    Easy: "bg-green-500",
-    Intermediate: "bg-yellow-400",
-    Advanced: "bg-blue-600",
-    Expert: "bg-red-700",
-  };
-  return colors[level];
-};
+import { levelColor } from "../utils";
+import { useAuth } from "../context/AuthContext";
 
 interface CardProps {
   slug: string;
@@ -23,7 +13,7 @@ interface CardProps {
   description: string;
   buttonText: string;
   index: number;
-  level: Level;
+  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
 }
 
 const Card: React.FC<CardProps> = ({
@@ -37,9 +27,9 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const staggerDelay = index * 150;
   const { ref, isVisible } = useInViewAnimation(staggerDelay);
-
+  const { user } = useAuth();
   return (
-    <Link href={`/programs/${slug}`} className="block h-full">
+    <Link href={user ? `/programs/${slug}` : "/login"} className="block h-full">
       <div
         ref={ref}
         className={`group bg-[#1a1a1a] rounded-2xl shadow-lg w-full h-full flex flex-col transition-all duration-700 ease-out hover:cursor-pointer ${
