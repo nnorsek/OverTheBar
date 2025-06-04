@@ -7,7 +7,14 @@ export const getNextLevelInfo = (progression: number | undefined) => {
     return { nextLevel: "Advanced", pointsToNext: 6 - progression };
   if (progression < 8)
     return { nextLevel: "Expert", pointsToNext: 8 - progression };
-  if (progression >= 8) return null; // max level
+  if (progression >= 8) return null;
 
   return null;
+};
+
+export const getProgressionLabel = (level: number | undefined) => {
+  if (level === undefined) return "Unknown";
+  if (level < 3) return "Beginner";
+  if (level < 7) return "Intermediate";
+  return "Advanced";
 };

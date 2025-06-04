@@ -4,79 +4,54 @@ import Image from "next/image";
 import Card from "./components/Card";
 import useInfiniteScroll from "./hooks/useInfiniteScroll";
 import TestamonialCard from "./components/TestamonialCard";
+import DashboardPage from "./components/Dashboard";
+
+// Define type for program
+type Program = {
+  _id: string;
+  slug: string;
+  title: string;
+  description: string;
+  level: "Easy" | "Intermediate" | "Advanced" | "Expert";
+  images: { imgSrc: string; alt: string }[];
+};
 
 type Level = "Easy" | "Intermediate" | "Advanced" | "Expert";
 
-const allPrograms = [
-  {
-    imageSrc: "/images/pullup3.jpg",
-    alt: "Pull up",
-    title: "Pull Ups for Beginners",
-    description:
-      "Learn how to start your pull-up journey with easy-to-follow progressions and tips.",
-    buttonText: "Start Workout",
-    level: "Expert",
-  },
-  {
-    imageSrc: "/images/dips.webp",
-    alt: "Dips",
-    title: "Dips Made Easy",
-    description:
-      "Build upper body strength with simple, effective dip progressions for all levels.",
-    buttonText: "Start Workout",
-    level: "Intermediate",
-  },
-  {
-    imageSrc: "/images/core.avif",
-    alt: "Core",
-    title: "Core Activation Basics",
-    description:
-      "Learn to engage your core the right way for calisthenics strength.",
-    buttonText: "Start Workout",
-    level: "Easy",
-  },
-  {
-    imageSrc: "/images/pullup3.jpg",
-    alt: "Pull up",
-    title: "Pull Ups for Beginners",
-    description:
-      "Learn how to start your pull-up journey with easy-to-follow progressions and tips.",
-    buttonText: "Start Workout",
-    level: "Easy",
-  },
-  {
-    imageSrc: "/images/dips.webp",
-    alt: "Dips",
-    title: "Dips Made Easy",
-    description:
-      "Build upper body strength with simple, effective dip progressions for all levels.",
-    buttonText: "Start Workout",
-    level: "Easy",
-  },
-  {
-    imageSrc: "/images/core.avif",
-    alt: "Core",
-    title: "Core Activation Basics",
-    description:
-      "Learn to engage your core the right way for calisthenics strength.",
-    buttonText: "Start Workout",
-    level: "Advanced",
-  },
-];
+const mapLevel = (level: string): Level => {
+  const formatted =
+    level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
+  const levels: Level[] = ["Easy", "Intermediate", "Advanced", "Expert"];
+  return levels.includes(formatted as Level) ? (formatted as Level) : "Easy";
+};
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const [elevateVisible, setElevateVisible] = useState(false);
   const [visibleCount, setVisibleCount] = useState(3);
+  const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/program/all");
+        const data = await res.json();
+        setPrograms(data);
+      } catch (err) {
+        console.error("Failed to fetch programs", err);
+      }
+    };
+
+    fetchPrograms();
+
     setIsVisible(true);
     const timer = setTimeout(() => setElevateVisible(true), 1000);
     return () => clearTimeout(timer);
   }, []);
+  console.log(programs);
 
   const loadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 3, allPrograms.length));
+    setVisibleCount((prev) => Math.min(prev + 3, programs.length));
   };
 
   const bottomRef = useInfiniteScroll(loadMore);
@@ -112,7 +87,11 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="bg-[#272727] pt-10">
+
+      <DashboardPage />
+
+      {/* Testimonials */}
+      <div className="bg-[#272727]">
         <h1 className="text-center text-5xl font-bold py-2">
           They did it. You can too.
         </h1>
@@ -124,42 +103,58 @@ export default function Home() {
           control but also and most importantly is gonna boost your
           self-confidence.
         </p>
+
         <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <TestamonialCard
-            review="I started working out after I saw Darek’s one year body transofmration video. Attached photos show my 1 year progress. Started when I was 16 years old at 59kg and got to 68kg (172cm). Never could have accomplished it without the help of Caliathletics program."
+            review="I started working out after I saw Darek’s one year body transformation video..."
             src="/images/transformation1.jpeg"
             name="John Smith"
             rating={4.3}
           />
           <TestamonialCard
-            review="I started working out after I saw Darek’s one year body transofmration video. Attached photos show my 1 year progress. Started when I was 16 years old at 59kg and got to 68kg (172cm). Never could have accomplished it without the help of Caliathletics program."
+            review="Attached photos show my 1 year progress. Started when I was 16 years old at 59kg..."
             src="/images/transformation2.jpeg"
             name="John Smith"
             rating={4.3}
           />
           <TestamonialCard
-            review="I started working out after I saw Darek’s one year body transofmration video. Attached photos show my 1 year progress. Started when I was 16 years old at 59kg and got to 68kg (172cm). Never could have accomplished it without the help of Caliathletics program."
+            review="Never could have accomplished it without the help of Caliathletics program."
             src="/images/transformation3.jpeg"
             name="John Smith"
             rating={4.3}
           />
         </div>
+
+        {/* Programs */}
         <h1 className="text-center text-5xl font-bold py-2">
           Looking for a Program?
         </h1>
         <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allPrograms.map((program, i) => (
+          {programs.slice(0, visibleCount).map((program, index) => (
             <Card
-              key={i}
-              {...program}
-              index={i}
-              level={program.level as Level}
+              key={program._id}
+              slug={program.slug}
+              imageSrc={
+                Array.isArray(program.images) && program.images.length > 0
+                  ? program.images[0].imgSrc
+                  : "/images/default.webp"
+              }
+              alt={
+                Array.isArray(program.images) && program.images.length > 0
+                  ? program.images[0].alt
+                  : "Program image"
+              }
+              title={program.title}
+              description={program.description}
+              buttonText="View Program"
+              index={index}
+              level={mapLevel(program.level)}
             />
           ))}
         </div>
         <div ref={bottomRef} className="h-10" />
       </div>
-      <div className="pt-10"></div>
+      <div className="pt-10" />
     </div>
   );
 }
