@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Card from "./components/Card";
@@ -6,7 +7,6 @@ import useInfiniteScroll from "./hooks/useInfiniteScroll";
 import TestamonialCard from "./components/TestamonialCard";
 import DashboardPage from "./components/Dashboard";
 
-// Define type for program
 type Program = {
   _id: string;
   slug: string;
@@ -48,7 +48,6 @@ export default function Home() {
     const timer = setTimeout(() => setElevateVisible(true), 1000);
     return () => clearTimeout(timer);
   }, []);
-  console.log(programs);
 
   const loadMore = () => {
     setVisibleCount((prev) => Math.min(prev + 3, programs.length));
@@ -88,14 +87,17 @@ export default function Home() {
         </div>
       </div>
 
-      <DashboardPage />
+      <div
+        className="relative bg-repeat bg-center bg-cover"
+        style={{ backgroundImage: "url('/images/blob-scene-haikei.svg')" }}
+      >
+        <DashboardPage />
 
-      {/* Testimonials */}
-      <div className="bg-[#272727]">
-        <h1 className="text-center text-5xl font-bold py-2">
+        {/* Testimonials */}
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold pt-16 sm:pt-20">
           They did it. You can too.
         </h1>
-        <p className="text-center p-5 text-2xl w-250 mx-auto leading-relaxed text-gray-200">
+        <p className="text-center px-4 sm:px-8 md:px-16 lg:px-32 xl:px-52 2xl:px-80 text-lg sm:text-xl md:text-2xl leading-relaxed text-gray-200 max-w-screen-xl mx-auto pt-6">
           Calisthenics workouts will influence every aspect of your life –
           relationships, business, family and health. Keep in mind that nothing
           comes easy. However, all of that hard work not only will pay off in
@@ -104,7 +106,7 @@ export default function Home() {
           self-confidence.
         </p>
 
-        <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="p-6 sm:p-8 md:p-10 lg:p-14 xl:p-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto">
           <TestamonialCard
             review="I started working out after I saw Darek’s one year body transformation video..."
             src="/images/transformation1.jpeg"
@@ -126,10 +128,11 @@ export default function Home() {
         </div>
 
         {/* Programs */}
-        <h1 className="text-center text-5xl font-bold py-2">
+        <h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold pt-12">
           Looking for a Program?
         </h1>
-        <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div className="p-6 sm:p-8 md:p-10 lg:p-14 xl:p-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto">
           {programs.slice(0, visibleCount).map((program, index) => (
             <Card
               key={program._id}
@@ -154,7 +157,6 @@ export default function Home() {
         </div>
         <div ref={bottomRef} className="h-10" />
       </div>
-      <div className="pt-10" />
     </div>
   );
 }

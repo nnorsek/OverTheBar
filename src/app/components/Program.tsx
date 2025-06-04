@@ -171,7 +171,7 @@ const Program: React.FC<ProgramProps> = ({
                       : "bg-gray-600 text-gray-300 hover:bg-gray-500"
                   }`}
                 >
-                  {completed[index] ? "✓" : "Mark"}
+                  {completed[index] ? "✓" : "✓"}
                 </button>
               </li>
             ))}

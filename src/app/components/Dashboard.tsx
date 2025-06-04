@@ -55,7 +55,7 @@ const DashboardPage = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500 bg-black">
+      <div className="min-h-screen flex items-center justify-center text-gray-800">
         Loading user data...
       </div>
     );
@@ -72,7 +72,7 @@ const DashboardPage = () => {
       : 100;
 
   return (
-    <main className="min-h-screen bg-[#272727] text-white p-6">
+    <main className=" text-white p-6">
       <section className="max-w-7xl mx-auto space-y-10">
         <header>
           <h1 className="text-4xl font-bold text-orange-500 mb-2 text-center pt-10">

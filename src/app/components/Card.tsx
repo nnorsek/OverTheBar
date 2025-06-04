@@ -58,7 +58,7 @@ const Card: React.FC<CardProps> = ({
         </div>
 
         {/* Text */}
-        <div className="flex flex-col flex-grow justify-between p-6 text-white">
+        <div className="flex flex-col flex-grow p-6 text-white">
           <div className="flex flex-col items-center">
             <div
               className={`rounded px-4 py-1 ${levelColor(
