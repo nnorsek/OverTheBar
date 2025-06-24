@@ -37,7 +37,7 @@ const Login = () => {
           progression: data.progression,
         });
         localStorage.setItem("user", JSON.stringify(data));
-        router.push("/");
+        router.push("/dashboard");
       } else {
         setErrorMsg(data.message || "Invalid email or password");
       }

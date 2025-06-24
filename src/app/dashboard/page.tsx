@@ -1,8 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getNextLevelInfo, getProgressionLabel, levelColor } from "../utils";
+import {
+  getNextLevelInfo,
+  getProgressionLabel,
+  levelColor,
+  mapLevel,
+} from "../utils/level";
+import { capitalizeFirstLetter } from "../utils/string";
 import Link from "next/link";
 import {
   ResponsiveContainer,
@@ -13,21 +19,21 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { fetchAllPrograms } from "../utils/api";
+import useInfiniteScroll from "../hooks/useInfiniteScroll";
+import Card from "../components/Card";
 
 interface Program {
   _id: string;
   slug: string;
   title: string;
   description: string;
-  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  level: "Unknown" | "Beginner" | "Intermediate" | "Advanced" | "Expert";
   images: { imgSrc: string; alt: string }[];
 }
 
-function capitalizeFirstLetter(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
 function getRandomPrograms(programs: Program[], count: number): Program[] {
+  if (!Array.isArray(programs)) return [];
   const shuffled = [...programs].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
@@ -41,13 +47,13 @@ const progressData = [
   { month: "Jun 2024", points: 1250 },
 ];
 
-interface DashboardPageProps {
-  programs: Program[];
-}
-
-const DashboardPage = ({ programs }: DashboardPageProps) => {
+const DashboardPage = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [elevateVisible, setElevateVisible] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [programs, setPrograms] = useState<Program[]>([]);
   const { user } = useAuth();
-  console.log(user);
+
   const progression = user?.progression || 0;
   const nextLevelInfo = getNextLevelInfo(progression);
   const pointsToNext = nextLevelInfo?.pointsToNext ?? 0;
@@ -58,9 +64,31 @@ const DashboardPage = ({ programs }: DashboardPageProps) => {
       ? (progression / (progression + pointsToNext)) * 100
       : 100;
 
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const data = await fetchAllPrograms();
+        setPrograms(data);
+      } catch (err) {
+        console.error("Failed to fetch programs", err);
+      }
+    };
+
+    fetchPrograms();
+
+    setIsVisible(true);
+    const timer = setTimeout(() => setElevateVisible(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const loadMore = () => {
+    setVisibleCount((prev) => Math.min(prev + 3, programs.length));
+  };
+
+  const bottomRef = useInfiniteScroll(loadMore);
+
   return (
     <main className="relative text-white p-6">
-      {/* Overlay & Blur if not signed in */}
       {!user && (
         <>
           <div className="absolute inset-0 backdrop-blur-md bg-black/40 z-20" />
@@ -91,7 +119,6 @@ const DashboardPage = ({ programs }: DashboardPageProps) => {
           </h1>
         </header>
 
-        {/* Cards Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-[#1a1a1a] p-6 rounded-xl shadow-md text-center">
             <div className="text-gray-300">Progression Points:</div>
@@ -120,7 +147,6 @@ const DashboardPage = ({ programs }: DashboardPageProps) => {
           </div>
         </div>
 
-        {/* Line Chart */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4">
             Progression Over Time
@@ -147,7 +173,6 @@ const DashboardPage = ({ programs }: DashboardPageProps) => {
           </div>
         </div>
 
-        {/* Suggested Programs */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4">
             Programs You Might Like
@@ -176,6 +201,33 @@ const DashboardPage = ({ programs }: DashboardPageProps) => {
             ))}
           </div>
         </div>
+      </section>
+
+      <section>
+        <div className="p-6 sm:p-8 md:p-10 lg:p-14 xl:p-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto">
+          {programs.slice(0, visibleCount).map((program, index) => (
+            <Card
+              key={program._id ?? program.slug ?? index}
+              slug={program.slug}
+              imageSrc={
+                Array.isArray(program.images) && program.images.length > 0
+                  ? program.images[0].imgSrc
+                  : "/images/default.webp"
+              }
+              alt={
+                Array.isArray(program.images) && program.images.length > 0
+                  ? program.images[0].alt
+                  : "Program image"
+              }
+              title={program.title}
+              description={program.description}
+              buttonText="View Program"
+              index={index}
+              level={mapLevel(program.level)}
+            />
+          ))}
+        </div>
+        <div ref={bottomRef} className="h-10" />
       </section>
     </main>
   );

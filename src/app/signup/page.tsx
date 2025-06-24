@@ -48,7 +48,7 @@ const Page = () => {
       );
       alert(response.data);
       localStorage.setItem("user", JSON.stringify(formData));
-      router.push("/");
+      router.push("/dashboard");
       // Optionally reset the form
       setFormData({
         name: "",

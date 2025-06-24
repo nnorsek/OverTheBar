@@ -18,7 +18,7 @@ interface ProgramProps {
 }
 
 const levelToPoints = (level: string): number => {
-  switch (level.toLowerCase()) {
+  switch (level) {
     case "Beginner":
       return 1;
     case "Intermediate":
@@ -39,12 +39,13 @@ const Program: React.FC<ProgramProps> = ({
   level,
   sections,
 }) => {
+  console.log("Level", level);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [completed, setCompleted] = useState<boolean[]>(
     new Array(sections.length).fill(false)
   );
   const [isFinished, setIsFinished] = useState<boolean>(false);
-
+  console.log(isFinished);
   const { user, setUser } = useAuth();
   const allCompleted = completed.every(Boolean);
   const levelPoints = levelToPoints(level);
@@ -74,7 +75,7 @@ const Program: React.FC<ProgramProps> = ({
       return updated;
     });
   };
-
+  console.log(levelPoints);
   const handleFinish = async () => {
     if (!user || isFinished) return;
 

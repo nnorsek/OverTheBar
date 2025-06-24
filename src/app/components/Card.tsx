@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import useInViewAnimation from "../hooks/useInViewAnimation";
-import { levelColor } from "../utils";
+import { levelColor } from "../utils/level";
 import { useAuth } from "../context/AuthContext";
 
 interface CardProps {
@@ -13,7 +13,7 @@ interface CardProps {
   description: string;
   buttonText: string;
   index: number;
-  level: "Beginner" | "Intermediate" | "Advanced" | "Expert";
+  level: "Unknown" | "Beginner" | "Intermediate" | "Advanced" | "Expert";
 }
 
 const Card: React.FC<CardProps> = ({

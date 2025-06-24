@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import ProfileModal from "./ProfileModal";
+import router from "next/router";
 
 const Navbar = () => {
   const { user, setUser } = useAuth();
@@ -24,6 +25,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setUser(null);
+    router.push("/");
     // Optional: also call backend logout API or clear cookies here if needed
   };
 
@@ -131,12 +133,14 @@ const Navbar = () => {
                     .toUpperCase()
                 : "?"}
             </div>
-            <button
-              onClick={handleLogout}
-              className="text-base underline hover:text-orange-500"
-            >
-              Logout
-            </button>
+            <a href="/">
+              <button
+                onClick={handleLogout}
+                className="text-base underline hover:text-orange-500"
+              >
+                Logout
+              </button>
+            </a>
           </div>
         )}
       </div>
