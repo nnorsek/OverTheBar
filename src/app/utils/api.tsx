@@ -8,3 +8,7 @@ export const fetchAllPrograms = async () => {
     throw err;
   }
 };
+
+//fetch user progression data
+
+

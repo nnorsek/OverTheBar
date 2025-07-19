@@ -113,7 +113,7 @@ const Program: React.FC<ProgramProps> = ({
     <div className="min-h-screen bg-[url('/pattern.svg')] bg-cover text-white p-8 font-sans">
       <div className="mb-6">
         <Link
-          href="/"
+          href="/dashboard"
           className="text-sm text-gray-300 hover:text-white underline"
         >
           ← Back to Home

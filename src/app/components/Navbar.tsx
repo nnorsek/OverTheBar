@@ -40,6 +40,9 @@ const Navbar = () => {
 
       {/* Nav Items */}
       <div className="flex items-center space-x-8 relative">
+        <a href="/dashboard" className="hover:text-orange-500">
+          Dashboard
+        </a>
         {/* Programs dropdown */}
         <div
           className="relative"
