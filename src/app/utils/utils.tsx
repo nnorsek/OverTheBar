@@ -33,6 +33,5 @@ export const levelColor = (level: Level): string => {
     return colors[level as Level];
   }
 
-  // Fallback for unknown strings
   return level;
 };

@@ -39,22 +39,46 @@ const Program: React.FC<ProgramProps> = ({
   level,
   sections,
 }) => {
-  console.log("Level", level);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [completed, setCompleted] = useState<boolean[]>(
     new Array(sections.length).fill(false)
   );
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  console.log(isFinished);
   const { user, setUser } = useAuth();
+
   const allCompleted = completed.every(Boolean);
   const levelPoints = levelToPoints(level);
 
+  // Fetch program completion status from backend
   useEffect(() => {
     if (!user) return;
-    const finishedKey = `finished_${user.email}_${title}`;
-    const hasFinished = localStorage.getItem(finishedKey) === "true";
-    if (hasFinished) setIsFinished(true);
+
+    const checkIfFinished = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:8080/api/users/program-status`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: user.email,
+              programTitle: title,
+            }),
+          }
+        );
+
+        if (!res.ok) throw new Error("Failed to fetch program status");
+
+        const { finished } = await res.json();
+        setIsFinished(finished);
+      } catch (error) {
+        console.error("Error checking program status:", error);
+      }
+    };
+
+    checkIfFinished();
   }, [title, user]);
 
   const seekTo = (seconds: number) => {
@@ -75,36 +99,50 @@ const Program: React.FC<ProgramProps> = ({
       return updated;
     });
   };
-  console.log(levelPoints);
+
   const handleFinish = async () => {
     if (!user || isFinished) return;
 
     const newProgression = (user.progression || 0) + levelPoints;
 
     try {
+      // First update progression and add completed program on backend
       const res = await fetch(`http://localhost:8080/api/users/progress`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: user.email,
           progression: newProgression,
+          // Remove completedProgram from this call if your backend doesn't support it here
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to update progression");
-      }
+      if (!res.ok) throw new Error("Failed to update progression");
 
-      const updatedUser = await res.json();
+      // Now call complete-program endpoint to add program title to user's completedPrograms
+      const completeRes = await fetch(
+        `http://localhost:8080/api/users/complete-program`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            programTitle: title,
+          }),
+        }
+      );
+
+      if (!completeRes.ok) throw new Error("Failed to mark program complete");
+
+      // Get updated user after both calls
+      const updatedUser = await completeRes.json();
 
       setUser(updatedUser);
-      localStorage.setItem(`finished_${user.email}_${title}`, "true");
       setIsFinished(true);
+
       alert(`You've earned ${levelPoints} point${levelPoints > 1 ? "s" : ""}!`);
     } catch (error) {
-      console.error("Error updating progression:", error);
+      console.error("Error updating progression or completing program:", error);
       alert("Something went wrong saving your progress.");
     }
   };
@@ -166,6 +204,7 @@ const Program: React.FC<ProgramProps> = ({
                 </button>
                 <button
                   onClick={() => toggleCompleted(index)}
+                  disabled={isFinished}
                   className={`ml-4 px-3 py-1 rounded-full text-sm font-bold transition ${
                     completed[index]
                       ? "bg-green-600 text-white"
